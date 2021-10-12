@@ -10,7 +10,7 @@ export default function App() {
   const [allWaves, setAllWaves] = useState([]);
   const [message, setMessage] = useState("");
 
-  const contractAddress = "0x0Ec037dfC26708dde0C90446F01F003148c9AE65";
+  const contractAddress = "0xA4c9eDf1E78383a6511A516A39cb28b030Fe21e4";
 
   const contractABI = abi.abi;
 
@@ -150,7 +150,7 @@ export default function App() {
         </div>
         <textarea value={message} onChange={handleChange} />
         <button className="waveButton" onClick={wave}>
-          Wave at Me!
+          Wave at Me! (and get 0.0001 ETH!)
         </button>
 
         {totalWaves && (<p className="text">{ totalWaves } people already waved at me here! Please join them!</p>)}
