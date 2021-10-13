@@ -31,6 +31,8 @@ const main = async () => {
 
     waveTxn = await waveContract.connect(randomPerson).wave("Another awesome message!");
     await waveTxn.wait();
+    waveTxn = await waveContract.connect(randomPerson).wave("Another other awesome message!");
+    await waveTxn.wait();
 
     waveCount = await waveContract.getTotalWaves();
     let allWaves = await waveContract.getAllWaves();
