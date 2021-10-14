@@ -10,7 +10,7 @@ export default function App() {
   const [allWaves, setAllWaves] = useState([]);
   const [message, setMessage] = useState("");
 
-  const contractAddress = "0xA4c9eDf1E78383a6511A516A39cb28b030Fe21e4";
+  const contractAddress = "0xE21EA5d461d5E049eF99a9654fd6A09412E2174f";
 
   const contractABI = abi.abi;
 
@@ -34,6 +34,16 @@ export default function App() {
           });
         });
         setAllWaves(wavesCleaned);
+
+        wavePortalContract.on("NewWave", (from, timestamp, message) => {
+          console.log("NewWave", from, timestamp, message);
+
+          setAllWaves(prevState => [...prevState, {
+            address: from,
+            timestamp: new Date(timestamp * 1000),
+            message: message
+          }]);
+        });
       } else {
         console.log("Ethereum object does not exist!")
       }
@@ -108,14 +118,13 @@ export default function App() {
         let count = await wavePortalContract.getTotalWaves();
         console.log("Retrieved total wave count...", count.toNumber());
 
-        const waveTxn = await wavePortalContract.wave(message);
+        const waveTxn = await wavePortalContract.wave(message, { gasLimit: 300000 });
         console.log("Mining...", waveTxn.hash);
 
         await waveTxn.wait();
         console.log("Mined --", waveTxn.hash);
 
         count = await wavePortalContract.getTotalWaves();
-        getAllWaves();
 
         console.log("Retrieved total wave count...", count.toNumber());
         setTotalWaves(count.toNumber());
@@ -145,22 +154,24 @@ export default function App() {
         </div>
 
         <div className="bio">
-        I am Florian and I'm building stuff in the Cloud.
-        Connect your Ethereum wallet and wave at me!
+        <p>I am Florian and I'm building stuff in the Cloud.</p>
+        <p>
+        Connect your Ethereum wallet and wave at me with an interesting/funny thing about Cloud!
+        </p>
         </div>
         <textarea value={message} onChange={handleChange} />
         <button className="waveButton" onClick={wave}>
           Wave at Me! (and get 0.0001 ETH!)
         </button>
 
-        {totalWaves && (<p className="text">{ totalWaves } people already waved at me here! Please join them!</p>)}
+        <p className="text">{ totalWaves } people already waved at me here! Please join them!</p>
 
         {!currentAccount && (
           <button className="waveButton" onClick={connectWallet}>
             Connect Wallet
           </button>
         )}
-        {allWaves.reverse().map((wave, index) => {
+        {allWaves.sort((a, b) => a.timestamp > b.timestamp).reverse().map((wave, index) => {
           return (
             <div key={index} style={{ backgroundColor: "#55BCC9", marginTop: "16px", padding: "8px", color: "#edf5e1"}}>
               <div>Adress: {wave.address}</div>
